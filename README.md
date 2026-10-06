@@ -1,6 +1,6 @@
-# 🍃 FlashCards (無印風格單字卡 App)
+# MyCards
 
-> 一個以「無印良品 (MUJI)」極簡與自然溫潤紙質風格設計的 iOS 單字卡學習 App。
+> 以極簡與自然溫潤紙質風格設計的 iOS 單字卡學習 App。
 
 ---
 
@@ -33,7 +33,7 @@ ASCIIFlashCards/
 ├── ViewModels/
 │   └── DeckStore.swift          # ObservableObject + UserDefaults 持久化
 ├── Views/
-│   ├── ASCIIHelpers.swift       # MUJI 設計系統 (Color, Font, mujiCard 修飾符)
+│   ├── ASCIIHelpers.swift       # 設計系統 (Color, Font, mujiCard 修飾符)
 │   ├── ContentView.swift        # TabView 根視圖 (首頁 / 單字庫 / 學習統計)
 │   ├── HomeView.swift           # 今日學習儀表板 + 快速複習入口
 │   ├── DeckListView.swift       # 文具收納盒風格字卡庫清單
