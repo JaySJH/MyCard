@@ -1,0 +1,388 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A001 /* ASCIIFlashCardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B001 /* ASCIIFlashCardsApp.swift */; };
+		A002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B002 /* ContentView.swift */; };
+		A003 /* FlashCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003 /* FlashCard.swift */; };
+		A004 /* DeckStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004 /* DeckStore.swift */; };
+		A005 /* ASCIIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B005 /* ASCIIHelpers.swift */; };
+		A006 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B006 /* HomeView.swift */; };
+		A007 /* DeckListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B007 /* DeckListView.swift */; };
+		A008 /* DeckDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B008 /* DeckDetailView.swift */; };
+		A009 /* StudyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B009 /* StudyView.swift */; };
+		A010 /* AddCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B010 /* AddCardView.swift */; };
+		A011 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B011 /* StatsView.swift */; };
+		A012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B012 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B001 /* ASCIIFlashCardsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ASCIIFlashCardsApp.swift; path = ASCIIFlashCards/ASCIIFlashCardsApp.swift; sourceTree = SOURCE_ROOT; };
+		B002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ASCIIFlashCards/Views/ContentView.swift; sourceTree = SOURCE_ROOT; };
+		B003 /* FlashCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlashCard.swift; path = ASCIIFlashCards/Models/FlashCard.swift; sourceTree = SOURCE_ROOT; };
+		B004 /* DeckStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeckStore.swift; path = ASCIIFlashCards/ViewModels/DeckStore.swift; sourceTree = SOURCE_ROOT; };
+		B005 /* ASCIIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ASCIIHelpers.swift; path = ASCIIFlashCards/Views/ASCIIHelpers.swift; sourceTree = SOURCE_ROOT; };
+		B006 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = ASCIIFlashCards/Views/HomeView.swift; sourceTree = SOURCE_ROOT; };
+		B007 /* DeckListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeckListView.swift; path = ASCIIFlashCards/Views/DeckListView.swift; sourceTree = SOURCE_ROOT; };
+		B008 /* DeckDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeckDetailView.swift; path = ASCIIFlashCards/Views/DeckDetailView.swift; sourceTree = SOURCE_ROOT; };
+		B009 /* StudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StudyView.swift; path = ASCIIFlashCards/Views/StudyView.swift; sourceTree = SOURCE_ROOT; };
+		B010 /* AddCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AddCardView.swift; path = ASCIIFlashCards/Views/AddCardView.swift; sourceTree = SOURCE_ROOT; };
+		B011 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StatsView.swift; path = ASCIIFlashCards/Views/StatsView.swift; sourceTree = SOURCE_ROOT; };
+		B012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ASCIIFlashCards/Resources/Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		B099 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ASCIIFlashCards/Info.plist; sourceTree = SOURCE_ROOT; };
+		PROD /* ASCIIFlashCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ASCIIFlashCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FB01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		APPGRP /* ASCIIFlashCards */ = {
+			isa = PBXGroup;
+			children = (
+				B001 /* ASCIIFlashCardsApp.swift */,
+				MODELGRP /* Models */,
+				VMGRP /* ViewModels */,
+				VIEWGRP /* Views */,
+				RESGRP /* Resources */,
+				B099 /* Info.plist */,
+			);
+			name = ASCIIFlashCards;
+			sourceTree = "<group>";
+		};
+		MODELGRP /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B003 /* FlashCard.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		PRODGRP /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				PROD /* ASCIIFlashCards.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		RESGRP /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B012 /* Assets.xcassets */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		ROOT = {
+			isa = PBXGroup;
+			children = (
+				APPGRP /* ASCIIFlashCards */,
+				PRODGRP /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		VIEWGRP /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B002 /* ContentView.swift */,
+				B005 /* ASCIIHelpers.swift */,
+				B006 /* HomeView.swift */,
+				B007 /* DeckListView.swift */,
+				B008 /* DeckDetailView.swift */,
+				B009 /* StudyView.swift */,
+				B010 /* AddCardView.swift */,
+				B011 /* StatsView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		VMGRP /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B004 /* DeckStore.swift */,
+			);
+			name = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		TARGET /* ASCIIFlashCards */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFGLIST /* Build configuration list for PBXNativeTarget "ASCIIFlashCards" */;
+			buildPhases = (
+				SRCPHASE /* Sources */,
+				FB01 /* Frameworks */,
+				RESPHASE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ASCIIFlashCards;
+			productName = ASCIIFlashCards;
+			productReference = PROD /* ASCIIFlashCards.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		PROJECT /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					TARGET = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = PROJCFGLIST /* Build configuration list for PBXProject "ASCIIFlashCards" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = ROOT;
+			productRefGroup = PRODGRP /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				TARGET /* ASCIIFlashCards */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		RESPHASE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A012 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		SRCPHASE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A001 /* ASCIIFlashCardsApp.swift in Sources */,
+				A002 /* ContentView.swift in Sources */,
+				A003 /* FlashCard.swift in Sources */,
+				A004 /* DeckStore.swift in Sources */,
+				A005 /* ASCIIHelpers.swift in Sources */,
+				A006 /* HomeView.swift in Sources */,
+				A007 /* DeckListView.swift in Sources */,
+				A008 /* DeckDetailView.swift in Sources */,
+				A009 /* StudyView.swift in Sources */,
+				A010 /* AddCardView.swift in Sources */,
+				A011 /* StatsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DEBUG_PROJ /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DEBUG_TARGET /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ASCIIFlashCards/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ascii.flashcards;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		RELEASE_PROJ /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		RELEASE_TARGET /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ASCIIFlashCards/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ascii.flashcards;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CFGLIST /* Build configuration list for PBXNativeTarget "ASCIIFlashCards" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEBUG_TARGET /* Debug */,
+				RELEASE_TARGET /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		PROJCFGLIST /* Build configuration list for PBXProject "ASCIIFlashCards" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEBUG_PROJ /* Debug */,
+				RELEASE_PROJ /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = PROJECT /* Project object */;
+}
