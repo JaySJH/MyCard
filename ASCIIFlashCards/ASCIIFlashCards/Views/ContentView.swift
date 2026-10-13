@@ -6,10 +6,10 @@ struct ContentView: View {
     @State private var selectedTab: Int = 0
 
     init() {
-        // Configure clean tab bar appearance
+        // Configure translucent tab bar appearance with subtle blur (Apple HIG)
         let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(Color.mujiBackground)
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = UIColor(Color.mujiBackground).withAlphaComponent(0.85)
         appearance.shadowColor = UIColor(Color.mujiBorder)
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -39,8 +39,10 @@ struct ContentView: View {
                     .tag(2)
             }
             .tint(.mujiCrimson)
+            .onChange(of: selectedTab) { _ in
+                Haptics.selection()
+            }
         }
-        .preferredColorScheme(.light)
     }
 }
 

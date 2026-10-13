@@ -15,6 +15,7 @@ struct StudyView: View {
     @State private var isFinished: Bool = false
     @State private var flipDegree: Double = 0
     @State private var showHint: Bool = false
+    @State private var dragOffset: CGSize = .zero
 
     var accentColor: Color { Color.terminalColor(for: deck.colorTheme) }
     var currentCard: FlashCard? { studyCards.indices.contains(currentIndex) ? studyCards[currentIndex] : nil }
@@ -60,7 +61,6 @@ struct StudyView: View {
                 }
             }
         }
-        .preferredColorScheme(.light)
         .onAppear {
             setupStudySession()
         }
@@ -99,6 +99,7 @@ struct StudyView: View {
                     }
 
                     Button {
+                        Haptics.light()
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
@@ -108,6 +109,8 @@ struct StudyView: View {
                             .background(Color.mujiSecondarySurface)
                             .clipShape(Circle())
                     }
+                    .buttonStyle(MujiPressableButtonStyle())
+                    .touchTarget()
                 }
             }
 
@@ -116,17 +119,17 @@ struct StudyView: View {
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(Color.mujiSecondarySurface)
-                        .frame(height: 3)
+                        .frame(height: 4)
                     Capsule()
                         .fill(accentColor)
-                        .frame(width: geo.size.width * CGFloat(progressRatio), height: 3)
+                        .frame(width: geo.size.width * CGFloat(progressRatio), height: 4)
                 }
             }
-            .frame(height: 3)
+            .frame(height: 4)
         }
     }
 
-    // MARK: - Flash Card Component
+    // MARK: - Flash Card Component (Apple HIG Fluid Gestures & Haptics)
     func paperFlashCard(card: FlashCard) -> some View {
         ZStack {
             cardBack(card: card)
@@ -139,7 +142,69 @@ struct StudyView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 340)
+        .overlay(
+            // Swipe Hints on Drag
+            Group {
+                if dragOffset.width > 40 {
+                    HStack {
+                        Spacer()
+                        Text("已記住 ✓")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.mujiSage)
+                            .clipShape(Capsule())
+                            .padding(16)
+                    }
+                } else if dragOffset.width < -40 {
+                    HStack {
+                        Text("✕ 還不熟")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.mujiCrimson)
+                            .clipShape(Capsule())
+                            .padding(16)
+                        Spacer()
+                    }
+                }
+            }
+            .animation(.easeInOut(duration: 0.15), value: dragOffset.width)
+        )
+        .offset(x: dragOffset.width, y: dragOffset.height * 0.15)
+        .rotationEffect(.degrees(Double(dragOffset.width / 24)))
         .contentShape(Rectangle())
+        .gesture(
+            DragGesture()
+                .onChanged { gesture in
+                    dragOffset = gesture.translation
+                }
+                .onEnded { gesture in
+                    if gesture.translation.width > 100 {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            dragOffset.width = 400
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            dragOffset = .zero
+                            markCard(card: card, correct: true)
+                        }
+                    } else if gesture.translation.width < -100 {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            dragOffset.width = -400
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            dragOffset = .zero
+                            markCard(card: card, correct: false)
+                        }
+                    } else {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            dragOffset = .zero
+                        }
+                    }
+                }
+        )
         .onTapGesture {
             flipCard()
         }
@@ -313,32 +378,36 @@ struct StudyView: View {
                 }
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .frame(height: 50)
                 .background(Color.mujiTextPrimary)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+            .buttonStyle(MujiPressableButtonStyle())
 
             Button {
+                Haptics.light()
                 withAnimation { showHint.toggle() }
             } label: {
                 Image(systemName: showHint ? "lightbulb.fill" : "lightbulb")
                     .font(.system(size: 16))
                     .foregroundColor(.mujiOchre)
-                    .frame(width: 48, height: 48)
+                    .frame(width: 50, height: 50)
                     .background(Color.mujiCardSurface)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .stroke(Color.mujiBorder, lineWidth: 0.8)
                     )
             }
+            .buttonStyle(MujiPressableButtonStyle())
+            .touchTarget()
         }
     }
 
-    // MARK: - Evaluation Buttons
+    // MARK: - Evaluation Buttons (Apple HIG Roles: Secondary vs Primary)
     func evaluationButtons(card: FlashCard) -> some View {
         HStack(spacing: 12) {
-            // Again button (還不熟)
+            // Again button (還不熟) - Secondary
             Button {
                 markCard(card: card, correct: false)
             } label: {
@@ -346,20 +415,21 @@ struct StudyView: View {
                     Image(systemName: "xmark")
                         .font(.system(size: 13, weight: .semibold))
                     Text("還不熟")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 15, weight: .medium))
                 }
                 .foregroundColor(.mujiCrimson)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .frame(height: 50)
                 .background(Color.mujiCrimson.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .stroke(Color.mujiCrimson.opacity(0.3), lineWidth: 1)
                 )
             }
+            .buttonStyle(MujiPressableButtonStyle())
 
-            // Got it button (已記住)
+            // Got it button (已記住) - Primary
             Button {
                 markCard(card: card, correct: true)
             } label: {
@@ -367,14 +437,15 @@ struct StudyView: View {
                     Image(systemName: "checkmark")
                         .font(.system(size: 13, weight: .semibold))
                     Text("已記住")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 15, weight: .medium))
                 }
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .frame(height: 50)
                 .background(Color.mujiSage)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+            .buttonStyle(MujiPressableButtonStyle())
         }
     }
 
@@ -515,6 +586,7 @@ struct StudyView: View {
     }
 
     func flipCard() {
+        Haptics.light()
         withAnimation(.easeInOut(duration: 0.35)) {
             flipDegree = isFlipped ? 0 : -180
             isFlipped.toggle()
@@ -523,8 +595,14 @@ struct StudyView: View {
     }
 
     func markCard(card: FlashCard, correct: Bool) {
+        if correct {
+            Haptics.medium()
+            sessionCorrect += 1
+        } else {
+            Haptics.warning()
+            sessionIncorrect += 1
+        }
         store.recordReview(cardId: card.id, deckId: deck.id, correct: correct)
-        if correct { sessionCorrect += 1 } else { sessionIncorrect += 1 }
 
         withAnimation(.easeInOut(duration: 0.25)) {
             flipDegree = 0
@@ -534,6 +612,7 @@ struct StudyView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             showHint = false
             if currentIndex + 1 >= studyCards.count {
+                Haptics.success()
                 withAnimation { isFinished = true }
             } else {
                 withAnimation { currentIndex += 1 }
@@ -545,5 +624,4 @@ struct StudyView: View {
 #Preview {
     StudyView(deck: Deck.sampleDeck)
         .environmentObject(DeckStore())
-        .preferredColorScheme(.light)
 }

@@ -165,6 +165,7 @@ struct HomeView: View {
         let accent = Color.terminalColor(for: deck.colorTheme)
 
         return Button {
+            Haptics.light()
             selectedDeckForStudy = deck
             showStudyView = true
         } label: {
@@ -201,9 +202,9 @@ struct HomeView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.mujiTextMuted)
             }
-            .mujiCard(cornerRadius: 10, padding: 14)
+            .mujiCard(cornerRadius: 12, padding: 14)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(MujiCardButtonStyle())
     }
 
     // MARK: - Study Note / Quote Card

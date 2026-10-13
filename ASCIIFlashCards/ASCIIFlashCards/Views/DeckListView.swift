@@ -36,7 +36,7 @@ struct DeckListView: View {
                                 NavigationLink(destination: DeckDetailView(deck: deck)) {
                                     DeckRowView(deck: deck)
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(MujiCardButtonStyle())
                                 .contextMenu {
                                     Button {
                                         editingDeck = deck
@@ -94,6 +94,7 @@ struct DeckListView: View {
             Spacer()
 
             Button {
+                Haptics.light()
                 showAddDeck = true
             } label: {
                 HStack(spacing: 4) {
@@ -103,11 +104,13 @@ struct DeckListView: View {
                         .font(.system(size: 13, weight: .medium))
                 }
                 .foregroundColor(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
                 .background(Color.mujiTextPrimary)
                 .clipShape(Capsule())
             }
+            .buttonStyle(MujiPressableButtonStyle())
+            .touchTarget()
         }
         .padding(.horizontal, 18)
         .padding(.top, 16)
@@ -118,7 +121,7 @@ struct DeckListView: View {
     var searchField: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 13))
+                .font(.system(size: 14))
                 .foregroundColor(.mujiTextMuted)
 
             TextField("搜尋單字庫...", text: $searchText)
@@ -127,20 +130,22 @@ struct DeckListView: View {
 
             if !searchText.isEmpty {
                 Button {
+                    Haptics.light()
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 14))
+                        .font(.system(size: 16))
                         .foregroundColor(.mujiTextMuted)
                 }
+                .touchTarget()
             }
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 9)
+        .padding(.vertical, 10)
         .background(Color.mujiCardSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .stroke(Color.mujiBorder, lineWidth: 0.75)
         )
     }

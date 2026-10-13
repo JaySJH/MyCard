@@ -19,8 +19,9 @@ struct DeckDetailView: View {
     }
 
     var filteredCards: [FlashCard] {
-        if searchText.isEmpty { return currentDeck.cards }
-        return currentDeck.cards.filter {
+        let sortedCards = currentDeck.cards.sorted { $0.createdAt < $1.createdAt }
+        if searchText.isEmpty { return sortedCards }
+        return sortedCards.filter {
             $0.word.localizedCaseInsensitiveContains(searchText) ||
             $0.definition.localizedCaseInsensitiveContains(searchText) ||
             $0.tags.contains { $0.localizedCaseInsensitiveContains(searchText) }
@@ -82,6 +83,7 @@ struct DeckDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 8) {
                     Button {
+                        Haptics.light()
                         showAddCard = true
                     } label: {
                         HStack(spacing: 4) {
@@ -96,9 +98,12 @@ struct DeckDetailView: View {
                         .background(Color.mujiSecondarySurface)
                         .clipShape(Capsule())
                     }
+                    .buttonStyle(MujiPressableButtonStyle())
+                    .touchTarget()
 
                     if !currentDeck.cards.isEmpty {
                         Button {
+                            Haptics.light()
                             showStudy = true
                         } label: {
                             HStack(spacing: 4) {
@@ -113,6 +118,8 @@ struct DeckDetailView: View {
                             .background(Color.mujiTextPrimary)
                             .clipShape(Capsule())
                         }
+                        .buttonStyle(MujiPressableButtonStyle())
+                        .touchTarget()
                     }
                 }
             }
@@ -208,7 +215,7 @@ struct DeckDetailView: View {
     var searchBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 13))
+                .font(.system(size: 14))
                 .foregroundColor(.mujiTextMuted)
 
             TextField("搜尋單字或釋義...", text: $searchText)
@@ -217,20 +224,22 @@ struct DeckDetailView: View {
 
             if !searchText.isEmpty {
                 Button {
+                    Haptics.light()
                     searchText = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 14))
+                        .font(.system(size: 16))
                         .foregroundColor(.mujiTextMuted)
                 }
+                .touchTarget()
             }
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .background(Color.mujiCardSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .stroke(Color.mujiBorder, lineWidth: 0.75)
         )
     }
@@ -275,7 +284,8 @@ struct CardRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
+                Haptics.selection()
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
                     expanded.toggle()
                 }
             } label: {
@@ -318,7 +328,7 @@ struct CardRowView: View {
                     }
                 }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(MujiCardButtonStyle())
 
             // Expanded details
             if expanded {
@@ -371,29 +381,39 @@ struct CardRowView: View {
 
                         Spacer()
 
-                        HStack(spacing: 12) {
+                        HStack(spacing: 8) {
                             Button {
+                                Haptics.light()
                                 onEdit()
                             } label: {
                                 Text("編輯")
                                     .font(.system(size: 12, weight: .medium))
                                     .foregroundColor(.mujiTextSecondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
+                            .touchTarget()
 
                             Button {
+                                Haptics.warning()
                                 onDelete()
                             } label: {
                                 Text("刪除")
                                     .font(.system(size: 12, weight: .medium))
                                     .foregroundColor(.mujiCrimson)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
+                            .touchTarget()
                         }
                     }
                     .padding(.top, 4)
                 }
             }
         }
-        .mujiCard(cornerRadius: 10, padding: 14)
+        .mujiCard(cornerRadius: 12, padding: 14)
     }
 }
 
@@ -402,5 +422,4 @@ struct CardRowView: View {
         DeckDetailView(deck: Deck.sampleDeck)
     }
     .environmentObject(DeckStore())
-    .preferredColorScheme(.light)
 }

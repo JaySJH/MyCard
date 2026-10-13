@@ -1,38 +1,71 @@
 import SwiftUI
 
-// MARK: - MUJI Color Palette & Design System
+// MARK: - MUJI Color Palette & Design System (Apple HIG Dynamic Adaptation)
 extension Color {
-    // ── 核心基礎色彩 (和紙與自然質感) ──
-    /// #F7F5F0 和紙暖米白底色
-    static let mujiBackground       = Color(red: 0.969, green: 0.961, blue: 0.941)
-    /// #FFFFFF 純白紙卡表面
-    static let mujiCardSurface      = Color.white
-    /// #EFECE6 淺亞麻灰微底色
-    static let mujiSecondarySurface = Color(red: 0.937, green: 0.925, blue: 0.902)
-    /// #E5E0D8 柔和素雅邊框線
-    static let mujiBorder           = Color(red: 0.898, green: 0.878, blue: 0.847)
+    // ── 核心基礎色彩 (和紙與自然質感，支援深淺色動態切換) ──
+    /// 和紙暖米白底色 (淺色 #F7F5F0 / 深色 #1C1B1A 墨炭沉靜底色)
+    static let mujiBackground = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.110, green: 0.106, blue: 0.102, alpha: 1.0)
+            : UIColor(red: 0.969, green: 0.961, blue: 0.941, alpha: 1.0)
+    })
 
-    // ── 文字層級色彩 ──
-    /// #2D2B29 溫潤炭墨黑 (主要標題、內文)
-    static let mujiTextPrimary      = Color(red: 0.176, green: 0.169, blue: 0.161)
-    /// #7D7971 淺墨灰 (副標題、詞性、說明)
-    static let mujiTextSecondary    = Color(red: 0.490, green: 0.475, blue: 0.443)
-    /// #AEA99F 淡麻灰 (次要提示、計數、邊緣資訊)
-    static let mujiTextMuted        = Color(red: 0.682, green: 0.663, blue: 0.624)
+    /// 純白紙卡表面 (淺色 #FFFFFF / 深色 #22201E 深炭卡片表面)
+    static let mujiCardSurface = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.150, green: 0.145, blue: 0.141, alpha: 1.0)
+            : UIColor.white
+    })
+
+    /// 淺亞麻灰微底色 (淺色 #EFECE6 / 深色 #2D2A28 亞麻深灰)
+    static let mujiSecondarySurface = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.196, green: 0.188, blue: 0.180, alpha: 1.0)
+            : UIColor(red: 0.937, green: 0.925, blue: 0.902, alpha: 1.0)
+    })
+
+    /// 柔和素雅邊框線 (淺色 #E5E0D8 / 深色 #33302D 深墨灰線條)
+    static let mujiBorder = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.235, green: 0.224, blue: 0.216, alpha: 1.0)
+            : UIColor(red: 0.898, green: 0.878, blue: 0.847, alpha: 1.0)
+    })
+
+    // ── 文字層級色彩 (動態階層高對比，符合 HIG 可讀性規範) ──
+    /// 溫潤炭墨黑 (淺色 #2D2B29 / 深色 #F5F3EF 柔和白)
+    static let mujiTextPrimary = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.961, green: 0.953, blue: 0.941, alpha: 1.0)
+            : UIColor(red: 0.176, green: 0.169, blue: 0.161, alpha: 1.0)
+    })
+
+    /// 淺墨灰 (副標題、詞性、說明)
+    static let mujiTextSecondary = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.722, green: 0.706, blue: 0.686, alpha: 1.0)
+            : UIColor(red: 0.490, green: 0.475, blue: 0.443, alpha: 1.0)
+    })
+
+    /// 淡麻灰 (次要提示、計數、邊緣資訊)
+    static let mujiTextMuted = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.549, green: 0.533, blue: 0.510, alpha: 1.0)
+            : UIColor(red: 0.682, green: 0.663, blue: 0.624, alpha: 1.0)
+    })
 
     // ── 自然植物與礦物色 (Accent Colors) ──
     /// #82252B 無印經典暗絳紅
-    static let mujiCrimson          = Color(red: 0.510, green: 0.145, blue: 0.169)
+    static let mujiCrimson          = Color(red: 0.550, green: 0.160, blue: 0.180)
     /// #63785E 若草 / 鼠苔綠
-    static let mujiSage             = Color(red: 0.388, green: 0.471, blue: 0.369)
+    static let mujiSage             = Color(red: 0.400, green: 0.490, blue: 0.380)
     /// #B8864E 柴染 / 芥子黃
-    static let mujiOchre            = Color(red: 0.722, green: 0.525, blue: 0.306)
+    static let mujiOchre            = Color(red: 0.740, green: 0.540, blue: 0.320)
     /// #4F677A 鐵紺 / 藍灰
-    static let mujiSlateBlue        = Color(red: 0.310, green: 0.404, blue: 0.478)
+    static let mujiSlateBlue        = Color(red: 0.330, green: 0.420, blue: 0.490)
     /// #4A4744 薄墨 / 炭灰
-    static let mujiCharcoal         = Color(red: 0.290, green: 0.278, blue: 0.267)
+    static let mujiCharcoal         = Color(red: 0.310, green: 0.298, blue: 0.286)
 
-    // ── 向下相容映射 (重定向至無印色盤) ──
+    // ── 向下相容映射 ──
     static let screenBg      = mujiBackground
     static let cardBg        = mujiCardSurface
     static let highlightBg   = mujiSecondarySurface
@@ -52,6 +85,49 @@ extension Color {
     }
 }
 
+// MARK: - HIG Tactile Feedback (Haptics)
+enum Haptics {
+    static func light() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+    static func medium() {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+    }
+    static func selection() {
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
+    static func success() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+    static func warning() {
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+    }
+}
+
+// MARK: - HIG Compliant Button Press Styles
+/// 為所有自訂按鈕提供符合 HIG 規範的微觸感回饋與縮放狀態
+struct MujiPressableButtonStyle: ButtonStyle {
+    var scale: CGFloat = 0.97
+    var opacity: Double = 0.88
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1.0)
+            .opacity(configuration.isPressed ? opacity : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// 卡片專用點選樣式 (輕微沉降感與觸覺回饋)
+struct MujiCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.985 : 1.0)
+            .opacity(configuration.isPressed ? 0.92 : 1.0)
+            .animation(.spring(response: 0.28, dampingFraction: 0.75), value: configuration.isPressed)
+    }
+}
+
 // MARK: - MUJI Typography
 extension Font {
     static let mujiLargeTitle = Font.system(size: 26, weight: .light, design: .default)
@@ -62,9 +138,9 @@ extension Font {
     static let mujiCaption    = Font.system(size: 11, weight: .regular, design: .default)
 }
 
-// MARK: - View Modifiers (Paper Card & Clean UI)
+// MARK: - View Modifiers (Paper Card & HIG UI)
 struct MujiCardStyle: ViewModifier {
-    var cornerRadius: CGFloat = 12
+    var cornerRadius: CGFloat = 14
     var padding: CGFloat = 16
 
     func body(content: Content) -> some View {
@@ -72,7 +148,7 @@ struct MujiCardStyle: ViewModifier {
             .padding(padding)
             .background(Color.mujiCardSurface)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
+            .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .stroke(Color.mujiBorder, lineWidth: 0.75)
@@ -81,12 +157,18 @@ struct MujiCardStyle: ViewModifier {
 }
 
 extension View {
-    func mujiCard(cornerRadius: CGFloat = 12, padding: CGFloat = 16) -> some View {
+    func mujiCard(cornerRadius: CGFloat = 14, padding: CGFloat = 16) -> some View {
         self.modifier(MujiCardStyle(cornerRadius: cornerRadius, padding: padding))
+    }
+
+    /// 確保按鈕觸控區域符合 Apple HIG 最小 44x44 pt 規範
+    func touchTarget(minSize: CGFloat = 44) -> some View {
+        self.frame(minWidth: minSize, minHeight: minSize)
+            .contentShape(Rectangle())
     }
 }
 
-// MARK: - Typography Helper (Replaced Monospace with Clean Humanist Sans)
+// MARK: - Typography Helper
 extension View {
     func terminalFont(size: CGFloat, bold: Bool = false) -> some View {
         self.font(.system(size: size, weight: bold ? .semibold : .regular, design: .default))

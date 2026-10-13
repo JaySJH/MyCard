@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - Stats View (MUJI Data & Analytics Style)
 struct StatsView: View {
     @EnvironmentObject var store: DeckStore
+    @State private var selectedLevel: Int? = nil
 
     var body: some View {
         NavigationStack {
@@ -135,6 +136,7 @@ struct StatsView: View {
             store.decks.flatMap { $0.cards }.filter { $0.masteryLevel == level }.count
         }
         let maxCount = max(levels.max() ?? 1, 1)
+        let levelLabels = ["新單字", "初識", "進步中", "熟悉", "熟練", "精通"]
 
         return VStack(alignment: .leading, spacing: 14) {
             HStack {
@@ -142,46 +144,91 @@ struct StatsView: View {
                     .font(.mujiHeadline)
                     .foregroundColor(.mujiTextPrimary)
                 Spacer()
-                Text("等級 0 至 5")
+                Text("輕點長條查看詳細")
                     .font(.mujiCaption)
                     .foregroundColor(.mujiTextMuted)
             }
 
-            // Real smooth bars
+            // Interactive accessible bars (Apple HIG Charts & Accessibility)
             HStack(alignment: .bottom, spacing: 12) {
                 ForEach(0...5, id: \.self) { level in
-                    VStack(spacing: 6) {
-                        let count = levels[level]
-                        Text("\(count)")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(.mujiTextMuted)
+                    let count = levels[level]
+                    let isSelected = selectedLevel == level
+                    let barHeight = CGFloat(count) / CGFloat(maxCount) * 80.0
 
-                        let barHeight = CGFloat(count) / CGFloat(maxCount) * 80.0
-                        RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(level >= 4 ? Color.mujiSage : (level >= 2 ? Color.mujiOchre : Color.mujiSecondarySurface))
-                            .frame(height: max(barHeight, 6))
+                    Button {
+                        Haptics.selection()
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                            selectedLevel = (selectedLevel == level) ? nil : level
+                        }
+                    } label: {
+                        VStack(spacing: 6) {
+                            Text("\(count)")
+                                .font(.system(size: 11, weight: isSelected ? .bold : .medium))
+                                .foregroundColor(isSelected ? .mujiCrimson : .mujiTextMuted)
 
-                        Text("Lv.\(level)")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.mujiTextSecondary)
+                            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                .fill(level >= 4 ? Color.mujiSage : (level >= 2 ? Color.mujiOchre : Color.mujiSecondarySurface))
+                                .frame(height: max(barHeight, 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                        .stroke(isSelected ? Color.mujiCrimson : Color.clear, lineWidth: 2)
+                                )
+                                .scaleEffect(isSelected ? 1.05 : 1.0, anchor: .bottom)
+
+                            Text("Lv.\(level)")
+                                .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+                                .foregroundColor(isSelected ? .mujiTextPrimary : .mujiTextSecondary)
+                        }
+                        .frame(maxWidth: .infinity)
                     }
-                    .frame(maxWidth: .infinity)
+                    .buttonStyle(.plain)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("等級 \(level)（\(levelLabels[level])），共 \(count) 張單字")
+                    .accessibilityHint("點選查看此等級詳細比例")
                 }
             }
-            .frame(height: 120)
+            .frame(height: 124)
             .padding(.top, 4)
 
-            HStack {
-                Text("Lv.0: 新單字")
-                Spacer()
-                Text("Lv.3: 熟悉")
-                Spacer()
-                Text("Lv.5: 精通")
+            // Dynamic detail card on selection
+            if let level = selectedLevel {
+                let count = levels[level]
+                let total = store.totalCards
+                let percent = total > 0 ? (Double(count) / Double(total) * 100) : 0
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(level >= 4 ? Color.mujiSage : (level >= 2 ? Color.mujiOchre : Color.mujiSecondarySurface))
+                        .frame(width: 8, height: 8)
+                    Text("等級 \(level)（\(levelLabels[level])）")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.mujiTextPrimary)
+                    Text("•")
+                        .font(.system(size: 11))
+                        .foregroundColor(.mujiBorder)
+                    Text("\(count) 張單字（佔比 \(String(format: "%.1f", percent))%）")
+                        .font(.system(size: 12))
+                        .foregroundColor(.mujiTextSecondary)
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.mujiSecondarySurface.opacity(0.5))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+            } else {
+                HStack {
+                    Text("Lv.0: 新單字")
+                    Spacer()
+                    Text("Lv.3: 熟悉")
+                    Spacer()
+                    Text("Lv.5: 精通")
+                }
+                .font(.system(size: 10))
+                .foregroundColor(.mujiTextMuted)
             }
-            .font(.system(size: 10))
-            .foregroundColor(.mujiTextMuted)
         }
-        .mujiCard(cornerRadius: 12, padding: 18)
+        .mujiCard(cornerRadius: 14, padding: 18)
     }
 
     // MARK: - Deck Breakdown Card

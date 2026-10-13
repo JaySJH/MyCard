@@ -103,19 +103,22 @@ struct AddDeckView: View {
         let isValid = !name.trimmingCharacters(in: .whitespaces).isEmpty
         return HStack(spacing: 12) {
             Button {
+                Haptics.light()
                 dismiss()
             } label: {
                 Text("取消")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.mujiTextSecondary)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 13)
                     .background(Color.mujiSecondarySurface)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
+            .buttonStyle(MujiPressableButtonStyle())
 
             Button {
                 guard isValid else { return }
+                Haptics.success()
                 let deck = Deck(
                     name: name.trimmingCharacters(in: .whitespaces),
                     description: description.trimmingCharacters(in: .whitespaces),
@@ -128,10 +131,11 @@ struct AddDeckView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 13)
                     .background(isValid ? Color.mujiTextPrimary : Color.mujiTextMuted)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
+            .buttonStyle(MujiPressableButtonStyle())
             .disabled(!isValid)
         }
         .padding(.top, 10)
@@ -202,19 +206,22 @@ struct EditDeckView: View {
                         let isValid = !name.trimmingCharacters(in: .whitespaces).isEmpty
                         HStack(spacing: 12) {
                             Button {
+                                Haptics.light()
                                 dismiss()
                             } label: {
                                 Text("取消")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.mujiTextSecondary)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
+                                    .padding(.vertical, 13)
                                     .background(Color.mujiSecondarySurface)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
 
                             Button {
                                 guard isValid else { return }
+                                Haptics.success()
                                 var updated = deck
                                 updated.name = name.trimmingCharacters(in: .whitespaces)
                                 updated.description = description.trimmingCharacters(in: .whitespaces)
@@ -226,10 +233,11 @@ struct EditDeckView: View {
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
+                                    .padding(.vertical, 13)
                                     .background(isValid ? Color.mujiTextPrimary : Color.mujiTextMuted)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
                             .disabled(!isValid)
                         }
 
@@ -314,19 +322,22 @@ struct AddCardView: View {
                         // Actions
                         HStack(spacing: 12) {
                             Button {
+                                Haptics.light()
                                 dismiss()
                             } label: {
                                 Text("取消")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.mujiTextSecondary)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
+                                    .padding(.vertical, 13)
                                     .background(Color.mujiSecondarySurface)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
 
                             Button {
                                 guard canSave else { return }
+                                Haptics.success()
                                 let tags = tagsInput.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
                                 let card = FlashCard(
                                     word: word.trimmingCharacters(in: .whitespaces),
@@ -343,10 +354,11 @@ struct AddCardView: View {
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
+                                    .padding(.vertical, 13)
                                     .background(canSave ? Color.mujiTextPrimary : Color.mujiTextMuted)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
                             .disabled(!canSave)
                         }
                         .padding(.top, 6)
@@ -529,19 +541,22 @@ struct EditCardView: View {
                         // Actions
                         HStack(spacing: 12) {
                             Button {
+                                Haptics.light()
                                 dismiss()
                             } label: {
                                 Text("取消")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.mujiTextSecondary)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
+                                    .padding(.vertical, 13)
                                     .background(Color.mujiSecondarySurface)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
 
                             Button {
                                 guard canSave else { return }
+                                Haptics.success()
                                 let tags = tagsInput.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
                                 var updated = card
                                 updated.word = word.trimmingCharacters(in: .whitespaces)
@@ -557,10 +572,11 @@ struct EditCardView: View {
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
+                                    .padding(.vertical, 13)
                                     .background(canSave ? Color.mujiTextPrimary : Color.mujiTextMuted)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             }
+                            .buttonStyle(MujiPressableButtonStyle())
                             .disabled(!canSave)
                         }
 
@@ -630,9 +646,9 @@ func mujiField(label: String, placeholder: String, text: Binding<String>) -> som
             .padding(.horizontal, 14)
             .padding(.vertical, 11)
             .background(Color.mujiCardSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .stroke(Color.mujiBorder, lineWidth: 0.75)
             )
     }
@@ -641,5 +657,4 @@ func mujiField(label: String, placeholder: String, text: Binding<String>) -> som
 #Preview {
     AddDeckView()
         .environmentObject(DeckStore())
-        .preferredColorScheme(.light)
 }
