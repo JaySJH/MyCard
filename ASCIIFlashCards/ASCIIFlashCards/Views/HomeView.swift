@@ -4,7 +4,6 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var store: DeckStore
     @State private var selectedDeckForStudy: Deck? = nil
-    @State private var showStudyView = false
 
     private var formattedDate: String {
         let formatter = DateFormatter()
@@ -30,7 +29,7 @@ struct HomeView: View {
                         quickStudySection
 
                         // ── Study Note / Tip ──
-                        studyNoteCard
+//                        studyNoteCard
 
                         Spacer(minLength: 40)
                     }
@@ -40,10 +39,8 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: $showStudyView) {
-                if let deck = selectedDeckForStudy {
-                    StudyView(deck: deck)
-                }
+            .sheet(item: $selectedDeckForStudy) { deck in
+                StudyView(deck: deck)
             }
         }
     }
@@ -63,15 +60,29 @@ struct HomeView: View {
 
                 Spacer()
 
-                // Minimalist MUJI Tag
-                Text("FLASHCARDS")
-                    .font(.system(size: 10, weight: .medium, design: .default))
-                    .tracking(1.5)
-                    .foregroundColor(.mujiCrimson)
+                if store.studyStats.currentStreak > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 11))
+                        Text("連續 \(store.studyStats.currentStreak) 天")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(.mujiOchre)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(Color.mujiCrimson.opacity(0.08))
+                    .background(Color.mujiOchre.opacity(0.12))
                     .clipShape(Capsule())
+                }
+
+                // Minimalist MUJI Tag
+//                Text("FLASHCARDS")
+//                    .font(.system(size: 10, weight: .medium, design: .default))
+//                    .tracking(1.5)
+//                    .foregroundColor(.mujiCrimson)
+//                    .padding(.horizontal, 10)
+//                    .padding(.vertical, 4)
+//                    .background(Color.mujiCrimson.opacity(0.08))
+//                    .clipShape(Capsule())
             }
 
             Rectangle()
@@ -149,10 +160,10 @@ struct HomeView: View {
                 Text("快速複習")
                     .font(.mujiHeadline)
                     .foregroundColor(.mujiTextPrimary)
-                Spacer()
-                Text("點選立即開始")
-                    .font(.mujiCaption)
-                    .foregroundColor(.mujiTextMuted)
+//                Spacer()
+//                Text("點選立即開始")
+//                    .font(.mujiCaption)
+//                    .foregroundColor(.mujiTextMuted)
             }
 
             ForEach(store.decks.prefix(3)) { deck in
@@ -167,7 +178,6 @@ struct HomeView: View {
         return Button {
             Haptics.light()
             selectedDeckForStudy = deck
-            showStudyView = true
         } label: {
             HStack(spacing: 14) {
                 // Subtle colored vertical bar indicating deck theme
@@ -208,41 +218,41 @@ struct HomeView: View {
     }
 
     // MARK: - Study Note / Quote Card
-    var studyNoteCard: some View {
-        let tips = [
-            "每天規律複習數個單字，記憶最為深刻長久。",
-            "複習時嘗試在腦中浮現單字拼法與例句場景。",
-            "將學到的單字嘗試組成簡單句子，加深連結。",
-            "依主題分類單字群組，學習效率自然提升。",
-            "重複間隔記憶法（Spaced Repetition）是最高效的學習之道。"
-        ]
-        let tip = tips[Calendar.current.component(.day, from: Date()) % tips.count]
-
-        return HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "quote.opening")
-                .font(.system(size: 14))
-                .foregroundColor(.mujiOchre)
-                .padding(.top, 2)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("學習筆記")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.mujiOchre)
-                Text(tip)
-                    .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(.mujiTextSecondary)
-                    .lineSpacing(3)
-            }
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.mujiSecondarySurface.opacity(0.6))
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color.mujiBorder.opacity(0.8), lineWidth: 0.75)
-        )
-    }
+//    var studyNoteCard: some View {
+//        let tips = [
+//            "每天規律複習數個單字，記憶最為深刻長久。",
+//            "複習時嘗試在腦中浮現單字拼法與例句場景。",
+//            "將學到的單字嘗試組成簡單句子，加深連結。",
+//            "依主題分類單字群組，學習效率自然提升。",
+//            "重複間隔記憶法（Spaced Repetition）是最高效的學習之道。"
+//        ]
+//        let tip = tips[Calendar.current.component(.day, from: Date()) % tips.count]
+//
+//        return HStack(alignment: .top, spacing: 12) {
+//            Image(systemName: "quote.opening")
+//                .font(.system(size: 14))
+//                .foregroundColor(.mujiOchre)
+//                .padding(.top, 2)
+//
+//            VStack(alignment: .leading, spacing: 4) {
+//                Text("學習筆記")
+//                    .font(.system(size: 12, weight: .medium))
+//                    .foregroundColor(.mujiOchre)
+//                Text(tip)
+//                    .font(.system(size: 13, weight: .regular))
+//                    .foregroundColor(.mujiTextSecondary)
+//                    .lineSpacing(3)
+//            }
+//        }
+//        .padding(14)
+//        .frame(maxWidth: .infinity, alignment: .leading)
+//        .background(Color.mujiSecondarySurface.opacity(0.6))
+//        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+//        .overlay(
+//            RoundedRectangle(cornerRadius: 10, style: .continuous)
+//                .stroke(Color.mujiBorder.opacity(0.8), lineWidth: 0.75)
+//        )
+//    }
 }
 
 #Preview {

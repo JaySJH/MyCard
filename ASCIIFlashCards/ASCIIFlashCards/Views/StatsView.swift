@@ -60,9 +60,25 @@ struct StatsView: View {
     var overviewCard: some View {
         let stats = store.studyStats
         return VStack(alignment: .leading, spacing: 16) {
-            Text("總覽數據")
-                .font(.mujiHeadline)
-                .foregroundColor(.mujiTextPrimary)
+            HStack {
+                Text("總覽數據")
+                    .font(.mujiHeadline)
+                    .foregroundColor(.mujiTextPrimary)
+                Spacer()
+                if stats.currentStreak > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 11))
+                        Text("連續學習 \(stats.currentStreak) 天")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(.mujiOchre)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 3)
+                    .background(Color.mujiOchre.opacity(0.12))
+                    .clipShape(Capsule())
+                }
+            }
 
             // Grid of key stats
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {

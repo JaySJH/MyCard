@@ -1,4 +1,124 @@
 import SwiftUI
+import AVFoundation
+import NaturalLanguage
+
+// MARK: - Smart Speech Synthesizer (Auto Language Detection & TTS)
+@MainActor
+final class SpeechManager: ObservableObject {
+    static let shared = SpeechManager()
+
+    private let synthesizer = AVSpeechSynthesizer()
+    @AppStorage("autoPlayPronunciation") var autoPlayOnStudy: Bool = false
+
+    private init() {}
+
+    /// 根據文字與上下文（如例句或釋義）自動偵測語言並發音
+    func speak(_ text: String, contextText: String = "", rate: Float = 0.48) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        // Configure audio session so sound plays even if silent switch is on
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
+            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            // Ignore audio session error in simulator/preview
+        }
+
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+
+        let languageCode = detectLanguage(for: trimmed, contextText: contextText)
+        let utterance = AVSpeechUtterance(string: trimmed)
+        utterance.voice = AVSpeechSynthesisVoice(language: languageCode) ?? AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = rate
+        utterance.pitchMultiplier = 1.0
+        synthesizer.speak(utterance)
+    }
+
+    func stop() {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+    }
+
+    /// 智慧判斷單字或例句的語系 (支援英、日、韓、中及歐語自動識別)
+    func detectLanguage(for text: String, contextText: String = "") -> String {
+        // 1. 若文字本身或上下文包含日文平假名 / 片假名，優先判定為日文 (解決純漢字日文單字如「経験」、「笑顔」的識別)
+        if containsJapaneseKana(text) || containsJapaneseKana(contextText) {
+            return "ja-JP"
+        }
+
+        // 2. 若包含韓文諺文
+        if containsKoreanHangul(text) {
+            return "ko-KR"
+        }
+
+        // 3. 若全為 ASCII 拉丁字母，預設使用英文發音 (避免短單字被誤判為其他拉丁語系)
+        let isLatinOnly = text.unicodeScalars.allSatisfy {
+            CharacterSet.letters.inverted.contains($0) || ($0.value >= 0x0041 && $0.value <= 0x024F)
+        }
+        if isLatinOnly {
+            let recognizer = NLLanguageRecognizer()
+            recognizer.processString(text)
+            if let lang = recognizer.dominantLanguage,
+               let confidence = recognizer.languageHypotheses(withMaximum: 1)[lang],
+               confidence > 0.85 {
+                switch lang {
+                case .french:  return "fr-FR"
+                case .german:  return "de-DE"
+                case .spanish: return "es-ES"
+                default:       return "en-US"
+                }
+            }
+            return "en-US"
+        }
+
+        // 4. 使用 NaturalLanguage 進行一般識別
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+        if let lang = recognizer.dominantLanguage {
+            switch lang {
+            case .japanese:           return "ja-JP"
+            case .korean:             return "ko-KR"
+            case .traditionalChinese: return "zh-TW"
+            case .simplifiedChinese:  return "zh-CN"
+            case .french:             return "fr-FR"
+            case .german:             return "de-DE"
+            case .spanish:            return "es-ES"
+            default:                  return "en-US"
+            }
+        }
+
+        // 5. 含中文字元則預設繁體中文
+        if containsCJK(text) {
+            return "zh-TW"
+        }
+
+        return "en-US"
+    }
+
+    private func containsJapaneseKana(_ str: String) -> Bool {
+        str.unicodeScalars.contains { scalar in
+            (scalar.value >= 0x3040 && scalar.value <= 0x309F) || // Hiragana
+            (scalar.value >= 0x30A0 && scalar.value <= 0x30FF)    // Katakana
+        }
+    }
+
+    private func containsKoreanHangul(_ str: String) -> Bool {
+        str.unicodeScalars.contains { scalar in
+            (scalar.value >= 0xAC00 && scalar.value <= 0xD7AF) ||
+            (scalar.value >= 0x1100 && scalar.value <= 0x11FF)
+        }
+    }
+
+    private func containsCJK(_ str: String) -> Bool {
+        str.unicodeScalars.contains { scalar in
+            scalar.value >= 0x4E00 && scalar.value <= 0x9FFF
+        }
+    }
+}
 
 // MARK: - MUJI Color Palette & Design System (Apple HIG Dynamic Adaptation)
 extension Color {
@@ -37,6 +157,13 @@ extension Color {
         traits.userInterfaceStyle == .dark
             ? UIColor(red: 0.961, green: 0.953, blue: 0.941, alpha: 1.0)
             : UIColor(red: 0.176, green: 0.169, blue: 0.161, alpha: 1.0)
+    })
+
+    /// 主按鈕反白文字色 (淺色 #FFFFFF 純白 / 深色 #1C1B1A 深炭墨黑，避免深色模式白底白字)
+    static let mujiButtonText = Color(UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.110, green: 0.106, blue: 0.102, alpha: 1.0)
+            : UIColor.white
     })
 
     /// 淺墨灰 (副標題、詞性、說明)

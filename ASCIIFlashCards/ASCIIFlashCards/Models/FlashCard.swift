@@ -100,6 +100,22 @@ enum Difficulty: String, CaseIterable, Codable {
     case medium = "MEDIUM"
     case hard   = "HARD"
 
+    var localizedLabel: String {
+        switch self {
+        case .easy:   return "簡單"
+        case .medium: return "中等"
+        case .hard:   return "挑戰"
+        }
+    }
+
+    var sortOrder: Int {
+        switch self {
+        case .hard:   return 0
+        case .medium: return 1
+        case .easy:   return 2
+        }
+    }
+
     var asciiBar: String {
         switch self {
         case .easy:   return "[###      ]"

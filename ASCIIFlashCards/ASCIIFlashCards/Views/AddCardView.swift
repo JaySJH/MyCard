@@ -129,7 +129,7 @@ struct AddDeckView: View {
             } label: {
                 Text("建立")
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(.mujiButtonText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
                     .background(isValid ? Color.mujiTextPrimary : Color.mujiTextMuted)
@@ -231,7 +231,7 @@ struct EditDeckView: View {
                             } label: {
                                 Text("儲存變更")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.mujiButtonText)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 13)
                                     .background(isValid ? Color.mujiTextPrimary : Color.mujiTextMuted)
@@ -291,10 +291,11 @@ struct AddCardView: View {
     @State private var selectedPOS: PartOfSpeech = .noun
     @State private var selectedDifficulty: Difficulty = .medium
     @State private var tagsInput = ""
+    @State private var savedBannerText: String? = nil
 
     var canSave: Bool {
-        !word.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !definition.trimmingCharacters(in: .whitespaces).isEmpty
+        !word.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !definition.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -304,11 +305,45 @@ struct AddCardView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        formHeader(title: "新增單字卡", subtitle: "建立新的詞彙記憶卡")
+                        formHeader(title: "新增單字卡", subtitle: "建立新的詞彙記憶卡（自動支援語音發音）")
 
-                        mujiField(label: "單字 (Word) *", placeholder: "例如：Ephemeral", text: $word)
-                        mujiField(label: "釋義 (Definition) *", placeholder: "例如：短暫的、轉瞬即逝的", text: $definition)
-                        mujiField(label: "例句 (Example)", placeholder: "例如：Fame in the modern world is ephemeral.", text: $example)
+                        if let banner = savedBannerText {
+                            HStack(spacing: 6) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 13))
+                                Text(banner)
+                                    .font(.system(size: 12, weight: .medium))
+                                Spacer()
+                            }
+                            .foregroundColor(.mujiSage)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.mujiSage.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+
+                        mujiField(
+                            label: "單字 (Word) *",
+                            placeholder: "例如：Ephemeral 或 経験",
+                            text: $word,
+                            showPronunciationPreview: true,
+                            pronunciationContext: example
+                        )
+                        mujiField(
+                            label: "釋義 (Definition) *",
+                            placeholder: "例如：短暫的、轉瞬即逝的（支援換行）",
+                            text: $definition,
+                            isMultiline: true
+                        )
+                        mujiField(
+                            label: "例句 (Example)",
+                            placeholder: "例如：Fame in the modern world is ephemeral.",
+                            text: $example,
+                            isMultiline: true,
+                            showPronunciationPreview: true,
+                            pronunciationContext: example
+                        )
 
                         // Part of Speech
                         posSection
@@ -318,6 +353,29 @@ struct AddCardView: View {
 
                         // Tags
                         mujiField(label: "標籤 (Tags)", placeholder: "例如：進階, 托福, 哲學 (以逗號分隔)", text: $tagsInput)
+
+                        // Batch Add Button (Save & Add Another)
+                        Button {
+                            saveCard(dismissAfter: false)
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "plus.rectangle.on.rectangle")
+                                    .font(.system(size: 13, weight: .medium))
+                                Text("儲存並繼續新增下一張")
+                                    .font(.system(size: 13, weight: .medium))
+                            }
+                            .foregroundColor(canSave ? .mujiTextPrimary : .mujiTextMuted)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
+                            .background(Color.mujiCardSurface)
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(Color.mujiBorder, lineWidth: 0.8)
+                            )
+                        }
+                        .buttonStyle(MujiPressableButtonStyle())
+                        .disabled(!canSave)
 
                         // Actions
                         HStack(spacing: 12) {
@@ -336,23 +394,11 @@ struct AddCardView: View {
                             .buttonStyle(MujiPressableButtonStyle())
 
                             Button {
-                                guard canSave else { return }
-                                Haptics.success()
-                                let tags = tagsInput.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-                                let card = FlashCard(
-                                    word: word.trimmingCharacters(in: .whitespaces),
-                                    definition: definition.trimmingCharacters(in: .whitespaces),
-                                    example: example.trimmingCharacters(in: .whitespaces),
-                                    partOfSpeech: selectedPOS,
-                                    difficulty: selectedDifficulty,
-                                    tags: tags
-                                )
-                                store.addCard(card, toDeckId: deckId)
-                                dismiss()
+                                saveCard(dismissAfter: true)
                             } label: {
-                                Text("新增卡片")
+                                Text("新增完成")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.mujiButtonText)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 13)
                                     .background(canSave ? Color.mujiTextPrimary : Color.mujiTextMuted)
@@ -361,12 +407,39 @@ struct AddCardView: View {
                             .buttonStyle(MujiPressableButtonStyle())
                             .disabled(!canSave)
                         }
-                        .padding(.top, 6)
+                        .padding(.top, 2)
                     }
                     .padding(20)
                 }
             }
             .navigationBarHidden(true)
+        }
+    }
+
+    private func saveCard(dismissAfter: Bool) {
+        guard canSave else { return }
+        Haptics.success()
+        let savedWord = word.trimmingCharacters(in: .whitespacesAndNewlines)
+        let tags = tagsInput.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        let card = FlashCard(
+            word: savedWord,
+            definition: definition.trimmingCharacters(in: .whitespacesAndNewlines),
+            example: example.trimmingCharacters(in: .whitespacesAndNewlines),
+            partOfSpeech: selectedPOS,
+            difficulty: selectedDifficulty,
+            tags: tags
+        )
+        store.addCard(card, toDeckId: deckId)
+
+        if dismissAfter {
+            dismiss()
+        } else {
+            withAnimation {
+                word = ""
+                definition = ""
+                example = ""
+                savedBannerText = "已新增「\(savedWord)」，可繼續輸入下一張"
+            }
         }
     }
 
@@ -385,7 +458,7 @@ struct AddCardView: View {
                         } label: {
                             Text(pos.label)
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(isSelected ? .white : .mujiTextSecondary)
+                                .foregroundColor(isSelected ? .mujiButtonText : .mujiTextSecondary)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .background(isSelected ? Color.mujiTextPrimary : Color.mujiCardSurface)
@@ -413,9 +486,9 @@ struct AddCardView: View {
                     Button {
                         selectedDifficulty = diff
                     } label: {
-                        Text(diff == .easy ? "簡單" : (diff == .medium ? "中等" : "挑戰"))
+                        Text(diff.localizedLabel)
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(isSelected ? .white : .mujiTextSecondary)
+                            .foregroundColor(isSelected ? .mujiButtonText : .mujiTextSecondary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
                             .background(isSelected ? Color.mujiTextPrimary : Color.mujiCardSurface)
@@ -460,8 +533,8 @@ struct EditCardView: View {
     }
 
     var canSave: Bool {
-        !word.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !definition.trimmingCharacters(in: .whitespaces).isEmpty
+        !word.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !definition.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -473,9 +546,27 @@ struct EditCardView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         formHeader(title: "編輯單字卡", subtitle: "修改單字、釋義或難度")
 
-                        mujiField(label: "單字 (Word) *", placeholder: "Word", text: $word)
-                        mujiField(label: "釋義 (Definition) *", placeholder: "Definition", text: $definition)
-                        mujiField(label: "例句 (Example)", placeholder: "Example", text: $example)
+                        mujiField(
+                            label: "單字 (Word) *",
+                            placeholder: "Word",
+                            text: $word,
+                            showPronunciationPreview: true,
+                            pronunciationContext: example
+                        )
+                        mujiField(
+                            label: "釋義 (Definition) *",
+                            placeholder: "Definition",
+                            text: $definition,
+                            isMultiline: true
+                        )
+                        mujiField(
+                            label: "例句 (Example)",
+                            placeholder: "Example",
+                            text: $example,
+                            isMultiline: true,
+                            showPronunciationPreview: true,
+                            pronunciationContext: example
+                        )
 
                         // POS
                         VStack(alignment: .leading, spacing: 8) {
@@ -492,7 +583,7 @@ struct EditCardView: View {
                                         } label: {
                                             Text(pos.label)
                                                 .font(.system(size: 12, weight: .medium))
-                                                .foregroundColor(isSelected ? .white : .mujiTextSecondary)
+                                                .foregroundColor(isSelected ? .mujiButtonText : .mujiTextSecondary)
                                                 .padding(.horizontal, 12)
                                                 .padding(.vertical, 6)
                                                 .background(isSelected ? Color.mujiTextPrimary : Color.mujiCardSurface)
@@ -519,9 +610,9 @@ struct EditCardView: View {
                                     Button {
                                         selectedDifficulty = diff
                                     } label: {
-                                        Text(diff == .easy ? "簡單" : (diff == .medium ? "中等" : "挑戰"))
+                                        Text(diff.localizedLabel)
                                             .font(.system(size: 13, weight: .medium))
-                                            .foregroundColor(isSelected ? .white : .mujiTextSecondary)
+                                            .foregroundColor(isSelected ? .mujiButtonText : .mujiTextSecondary)
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, 8)
                                             .background(isSelected ? Color.mujiTextPrimary : Color.mujiCardSurface)
@@ -558,10 +649,10 @@ struct EditCardView: View {
                                 guard canSave else { return }
                                 Haptics.success()
                                 let tags = tagsInput.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-                                var updated = card
-                                updated.word = word.trimmingCharacters(in: .whitespaces)
-                                updated.definition = definition.trimmingCharacters(in: .whitespaces)
-                                updated.example = example.trimmingCharacters(in: .whitespaces)
+                                let updated = card
+                                updated.word = word.trimmingCharacters(in: .whitespacesAndNewlines)
+                                updated.definition = definition.trimmingCharacters(in: .whitespacesAndNewlines)
+                                updated.example = example.trimmingCharacters(in: .whitespacesAndNewlines)
                                 updated.partOfSpeech = selectedPOS
                                 updated.difficulty = selectedDifficulty
                                 updated.tags = tags
@@ -570,7 +661,7 @@ struct EditCardView: View {
                             } label: {
                                 Text("儲存變更")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.mujiButtonText)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 13)
                                     .background(canSave ? Color.mujiTextPrimary : Color.mujiTextMuted)
@@ -634,23 +725,66 @@ func formHeader(title: String, subtitle: String) -> some View {
     }
 }
 
-func mujiField(label: String, placeholder: String, text: Binding<String>) -> some View {
+@MainActor
+func mujiField(
+    label: String,
+    placeholder: String,
+    text: Binding<String>,
+    isMultiline: Bool = false,
+    showPronunciationPreview: Bool = false,
+    pronunciationContext: String = ""
+) -> some View {
     VStack(alignment: .leading, spacing: 6) {
-        Text(label)
-            .font(.system(size: 12, weight: .medium))
-            .foregroundColor(.mujiTextSecondary)
+        HStack {
+            Text(label)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.mujiTextSecondary)
 
-        TextField(placeholder, text: text)
-            .font(.system(size: 14))
-            .foregroundColor(.mujiTextPrimary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 11)
-            .background(Color.mujiCardSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color.mujiBorder, lineWidth: 0.75)
-            )
+            Spacer()
+
+            if showPronunciationPreview && !text.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Button {
+                    Haptics.light()
+                    SpeechManager.shared.speak(text.wrappedValue, contextText: pronunciationContext)
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "speaker.wave.2.fill")
+                            .font(.system(size: 11))
+                        Text("試聽發音")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(.mujiSlateBlue)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+
+        if isMultiline {
+            TextField(placeholder, text: text, axis: .vertical)
+                .lineLimit(2...5)
+                .font(.system(size: 14))
+                .foregroundColor(.mujiTextPrimary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 11)
+                .background(Color.mujiCardSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.mujiBorder, lineWidth: 0.75)
+                )
+        } else {
+            TextField(placeholder, text: text)
+                .font(.system(size: 14))
+                .foregroundColor(.mujiTextPrimary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 11)
+                .background(Color.mujiCardSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.mujiBorder, lineWidth: 0.75)
+                )
+        }
     }
 }
 

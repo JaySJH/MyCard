@@ -40,6 +40,7 @@ class DeckStore: ObservableObject {
     private let saveKey = "ascii_flashcards_decks"
     private let statsKey = "ascii_flashcards_stats"
     private let migrationKey = "ascii_flashcards_migrated_to_swiftdata"
+    private let hasSeededKey = "ascii_flashcards_has_seeded_initial_data"
 
     init(modelContainer: ModelContainer? = nil) {
         if let container = modelContainer {
@@ -62,8 +63,11 @@ class DeckStore: ObservableObject {
         fetchDecks()
         fetchStats()
 
-        if decks.isEmpty {
+        let hasSeeded = UserDefaults.standard.bool(forKey: hasSeededKey)
+        if decks.isEmpty && !hasSeeded {
             seedInitialData()
+        } else if !decks.isEmpty && !hasSeeded {
+            UserDefaults.standard.set(true, forKey: hasSeededKey)
         }
     }
 
@@ -129,6 +133,10 @@ class DeckStore: ObservableObject {
         UserDefaults.standard.set(true, forKey: migrationKey)
     }
 
+    func restoreSampleDecks() {
+        seedInitialData()
+    }
+
     private func seedInitialData() {
         let sample = Deck.sampleDeck
         modelContext.insert(sample)
@@ -145,6 +153,7 @@ class DeckStore: ObservableObject {
         }
 
         try? modelContext.save()
+        UserDefaults.standard.set(true, forKey: hasSeededKey)
         fetchDecks()
     }
 
@@ -266,8 +275,9 @@ class DeckStore: ObservableObject {
     func recordReview(cardId: UUID, deckId: UUID, correct: Bool) {
         if let deck = decks.first(where: { $0.id == deckId }),
            let card = deck.cards.first(where: { $0.id == cardId }) {
+            let now = Date()
             card.reviewCount += 1
-            card.lastReviewed = Date()
+            card.lastReviewed = now
             if correct {
                 card.masteryLevel = min(5, card.masteryLevel + 1)
                 studyStats.correctCount += 1
@@ -275,8 +285,49 @@ class DeckStore: ObservableObject {
                 card.masteryLevel = max(0, card.masteryLevel - 1)
                 studyStats.incorrectCount += 1
             }
+
+            // Update daily streak
+            let calendar = Calendar.current
+            if let last = studyStats.lastStudied {
+                if calendar.isDateInToday(last) {
+                    studyStats.currentStreak = max(1, studyStats.currentStreak)
+                } else if calendar.isDateInYesterday(last) {
+                    studyStats.currentStreak += 1
+                } else {
+                    studyStats.currentStreak = 1
+                }
+            } else {
+                studyStats.currentStreak = 1
+            }
+
             studyStats.totalReviews += 1
-            studyStats.lastStudied = Date()
+            studyStats.lastStudied = now
+            saveStats()
+            try? modelContext.save()
+            fetchDecks()
+        }
+    }
+
+    func undoReview(
+        cardId: UUID,
+        deckId: UUID,
+        wasCorrect: Bool,
+        previousMastery: Int,
+        previousReviewCount: Int,
+        previousLastReviewed: Date?
+    ) {
+        if let deck = decks.first(where: { $0.id == deckId }),
+           let card = deck.cards.first(where: { $0.id == cardId }) {
+            card.masteryLevel = previousMastery
+            card.reviewCount = previousReviewCount
+            card.lastReviewed = previousLastReviewed
+
+            if wasCorrect {
+                studyStats.correctCount = max(0, studyStats.correctCount - 1)
+            } else {
+                studyStats.incorrectCount = max(0, studyStats.incorrectCount - 1)
+            }
+            studyStats.totalReviews = max(0, studyStats.totalReviews - 1)
             saveStats()
             try? modelContext.save()
             fetchDecks()
