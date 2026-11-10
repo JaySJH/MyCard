@@ -15,6 +15,14 @@ struct ContentView: View {
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 
+    @State private var testSheet: TestSheet? = nil
+
+    enum TestSheet: Identifiable {
+        case study
+        case addCard
+        var id: Int { hashValue }
+    }
+
     var body: some View {
         ZStack {
             Color.mujiBackground.ignoresSafeArea()
@@ -41,6 +49,32 @@ struct ContentView: View {
             .tint(.mujiCrimson)
             .onChange(of: selectedTab) { _ in
                 Haptics.selection()
+            }
+            .onAppear {
+                if CommandLine.arguments.contains("-UITest_Empty") {
+                    selectedTab = 1
+                } else if CommandLine.arguments.contains("-UITest_StudyFront") || CommandLine.arguments.contains("-UITest_StudyFinished") || CommandLine.arguments.contains("-UITest_SettingsToggle") {
+                    testSheet = .study
+                } else if CommandLine.arguments.contains("-UITest_AddCard") {
+                    testSheet = .addCard
+                } else if CommandLine.arguments.contains("-UITest_ReopenPersistence") {
+                    selectedTab = 0
+                    if store.decks.isEmpty {
+                        store.restoreSampleDecks()
+                    }
+                    store.studyStats.currentStreak = 1
+                    store.studyStats.totalReviews = 8
+                    store.studyStats.correctCount = 6
+                    store.studyStats.incorrectCount = 2
+                }
+            }
+            .sheet(item: $testSheet) { item in
+                switch item {
+                case .study:
+                    StudyView(deck: store.decks.first ?? Deck.sampleDeck)
+                case .addCard:
+                    AddCardView(deckId: store.decks.first?.id ?? UUID())
+                }
             }
         }
     }

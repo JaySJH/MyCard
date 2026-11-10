@@ -824,6 +824,18 @@ struct StudyView: View {
 
     // MARK: - Logic
     func setupStudySession() {
+        if CommandLine.arguments.contains("-UITest_StudyFinished") {
+            isFinished = true
+            sessionCorrect = 6
+            sessionIncorrect = 2
+            missedCards = Array(currentDeck.cards.prefix(2))
+            return
+        }
+        if CommandLine.arguments.contains("-UITest_SettingsToggle") {
+            studyScope = .unmastered
+            speech.autoPlayOnStudy = true
+        }
+
         let pool: [FlashCard]
         if studyScope == .unmastered {
             let unmastered = currentDeck.cards.filter { $0.masteryLevel < 4 }
