@@ -16,10 +16,15 @@ struct ASCIIFlashCardsApp: App {
                 FlashCard.self,
                 StudyStatsRecord.self
             ])
-            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            let isTest = CommandLine.arguments.contains("-UITestMode")
+            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isTest)
             let container = try ModelContainer(for: schema, configurations: [config])
             self.container = container
-            self._deckStore = StateObject(wrappedValue: DeckStore(modelContainer: container))
+            let store = DeckStore(modelContainer: container)
+            if CommandLine.arguments.contains("-UITest_Empty") {
+                store.decks = []
+            }
+            self._deckStore = StateObject(wrappedValue: store)
         } catch {
             fatalError("Failed to initialize SwiftData ModelContainer: \(error)")
         }
